@@ -1,3 +1,7 @@
+using DeshawnsDogWalking.Models;
+using DeshawnsDogWalking.Models.DTOs;
+
+
 List<Dog> dogs = new List<Dog> 
 {
      new Dog 
@@ -35,7 +39,7 @@ List<Dog> dogs = new List<Dog>
         CityId = 3, 
         WalkerId = 2 
     }
-}
+};
 
 List<Walker> walkers = new List<Walker>
 {
@@ -64,7 +68,7 @@ List<Walker> walkers = new List<Walker>
         Id = 5, 
         Name = "Casey" 
     }
-}
+};
 
 List<City> cities = new List<City>
 {
@@ -93,7 +97,7 @@ List<City> cities = new List<City>
         Id = 5, 
         Name = "Phoenix" 
     }
-}
+};
 
 
 
@@ -119,6 +123,21 @@ app.UseHttpsRedirection();
 app.MapGet("/api/hello", () =>
 {
     return new { Message = "Welcome to DeShawn's Dog Walking" };
+});
+
+
+app.MapGet("api/dogs", ()=> 
+{
+    return dogs.Select(dog => {
+        return new DogDTO
+        {
+           Id = dog.Id,
+           Name = dog.Name,
+           CityId = dog.CityId,
+           WalkerId = dog.WalkerId
+        };
+    });
+
 });
 
 
