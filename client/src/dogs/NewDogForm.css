@@ -1,0 +1,11 @@
+.new-dog-form {
+  border: solid black;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.new-dog-form input {
+  width: 15%;
+}

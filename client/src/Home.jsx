@@ -1,6 +1,7 @@
 import { getAllDogs, getGreeting } from './apiManager';
 import { useEffect, useState } from 'react';
 import './Home.css';
+import { useNavigate } from 'react-router-dom';
 
 export default function Home() {
   const [greeting, setGreeting] = useState({
@@ -8,6 +9,8 @@ export default function Home() {
   });
 
   const [dogs, setDogs] = useState([]);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     getGreeting()
@@ -25,6 +28,10 @@ export default function Home() {
       });
   }, []);
 
+  const handleAddNewDogClick = () => {
+    navigate('/new-dog-form');
+  };
+
   return (
     <>
       <p>{greeting.message}</p>
@@ -35,6 +42,7 @@ export default function Home() {
             return <li key={dog.id}>{dog.name}</li>;
           })}
         </ul>
+        <button onClick={handleAddNewDogClick}>Add new dog</button>
       </div>
     </>
   );
