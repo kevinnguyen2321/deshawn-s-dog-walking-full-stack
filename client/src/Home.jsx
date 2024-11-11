@@ -1,7 +1,7 @@
 import { getAllDogs, getGreeting } from './apiManager';
 import { useEffect, useState } from 'react';
 import './Home.css';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export default function Home() {
   const [greeting, setGreeting] = useState({
@@ -37,9 +37,18 @@ export default function Home() {
       <p>{greeting.message}</p>
       <div className="dogs-wrapper">
         <h2>Dog List</h2>
-        <ul>
+        {/* <ul>
           {dogs.map((dog) => {
             return <li key={dog.id}>{dog.name}</li>;
+          })}
+        </ul> */}
+        <ul className="dog-list-wrapper">
+          {dogs.map((dog) => {
+            return (
+              <li key={dog.id}>
+                <Link to={`/dog-details/${dog.id}`}>{dog.name}</Link>
+              </li>
+            );
           })}
         </ul>
         <button onClick={handleAddNewDogClick}>Add new dog</button>
