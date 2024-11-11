@@ -49,3 +49,20 @@ export const getDogById = async (id) => {
     console.error(error);
   }
 };
+
+export const removeDog = async (id) => {
+  try {
+    const res = await fetch(`/api/dogs/${id}`, {
+      method: 'DELETE',
+    });
+
+    if (!res.ok) {
+      throw new Error(
+        `Failed to delete dog with id ${id}. Status: ${res.status}`
+      );
+    }
+    console.log(`Dog with id ${id} deleted successfully`);
+  } catch (error) {
+    console.error('Error:', error);
+  }
+};
