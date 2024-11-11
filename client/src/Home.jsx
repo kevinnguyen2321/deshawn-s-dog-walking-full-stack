@@ -1,4 +1,4 @@
-import { getAllDogs, getGreeting } from './apiManager';
+import { getAllDogs, getGreeting, removeDog } from './apiManager';
 import { useEffect, useState } from 'react';
 import './Home.css';
 import { Link, useNavigate } from 'react-router-dom';
@@ -9,6 +9,14 @@ export default function Home() {
   });
 
   const [dogs, setDogs] = useState([]);
+
+  const fetchAndSetAllDogs = () => {
+    getAllDogs()
+      .then(setDogs)
+      .catch(() => {
+        console.log('Unable to retrieve dogs');
+      });
+  };
 
   const navigate = useNavigate();
 
@@ -21,15 +29,17 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    getAllDogs()
-      .then(setDogs)
-      .catch(() => {
-        console.log('Unable to retrieve dogs');
-      });
+    fetchAndSetAllDogs();
   }, []);
 
   const handleAddNewDogClick = () => {
     navigate('/new-dog-form');
+  };
+
+  const handleRemoveDog = (id) => {
+    removeDog(id).then(() => {
+      fetchAndSetAllDogs();
+    });
   };
 
   return (
@@ -47,6 +57,12 @@ export default function Home() {
             return (
               <li key={dog.id}>
                 <Link to={`/dog-details/${dog.id}`}>{dog.name}</Link>
+                <button
+                  onClick={() => handleRemoveDog(dog.id)}
+                  className="remove-btn"
+                >
+                  Remove
+                </button>
               </li>
             );
           })}

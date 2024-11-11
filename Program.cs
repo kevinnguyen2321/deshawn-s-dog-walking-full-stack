@@ -253,6 +253,21 @@ app.MapGet("api/cities", ()=> {
 });
 
 
+app.MapDelete("api/dogs/{id}", (int id)=>{
+    Dog foundDog = dogs.FirstOrDefault(dog => dog.Id == id);
+
+    if (foundDog == null)
+    {
+        return Results.NotFound();
+    }
+
+    dogs.Remove(foundDog);
+
+    return Results.NoContent();
+
+});
+
+
 
 
 app.Run();
