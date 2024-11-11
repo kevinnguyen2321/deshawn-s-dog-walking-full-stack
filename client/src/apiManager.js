@@ -35,7 +35,17 @@ export const addNewDog = async (dog) => {
 
     const data = await res.json(); // Parse the JSON response
     console.log('Success:', data); // Handle the successful response
+    return data;
   } catch (error) {
     console.error('Error:', error); // Handle any error that occurs
+  }
+};
+
+export const getDogById = async (id) => {
+  try {
+    const res = await fetch(`/api/dogs/${id}`);
+    return res.json();
+  } catch (error) {
+    console.error(error);
   }
 };

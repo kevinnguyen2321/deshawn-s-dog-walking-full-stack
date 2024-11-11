@@ -143,11 +143,11 @@ app.MapGet("api/dogs", ()=>
            Name = dog.Name,
            CityId = dog.CityId,
            WalkerId = dog.WalkerId,
-           Walker = new WalkerDTO
+           Walker = dog.Walker != null ? new WalkerDTO
            {
-            Id = dog.WalkerId,
+            Id = dog.Walker.Id,
             Name = dog.Walker.Name
-           },
+            } : null,
            City = new CityDTO
            {
             Id = dog.CityId,
@@ -168,7 +168,7 @@ app.MapPost("api/dogs", (Dog dog) =>
 dog.Walker = walkers.FirstOrDefault(w => w.Id == dog.WalkerId);
 dog.City = cities.FirstOrDefault(c => c.Id == dog.CityId);
 
- if (dog.Walker == null || dog.City == null)
+ if (dog.City == null)
     {
         return Results.BadRequest("Invalid walker or city ID. Please select a valid option.");
     }
@@ -188,12 +188,42 @@ return Results.Created($"/api/dogs/{dog.Id}", new DogDTO
         Name = dog.City.Name
     },
     WalkerId = dog.WalkerId,
-    Walker = new WalkerDTO
+    Walker = dog.Walker != null ? new WalkerDTO
     {
         Id = dog.Walker.Id,
         Name = dog.Walker.Name
-    }
+    } : null
 });
+
+});
+
+app.MapGet("api/dogs/{id}", (int id)=>{
+    Dog foundDog = dogs.FirstOrDefault(dog => dog.Id == id);
+    if (foundDog == null)
+    {
+        return Results.NotFound();
+    }
+
+    return Results.Ok(new DogDTO 
+    {
+        Id = foundDog.Id,
+        Name = foundDog.Name,
+        CityId = foundDog.CityId,
+        City = new CityDTO
+        {
+            Id = foundDog.City.Id,
+            Name = foundDog.City.Name
+        },
+        WalkerId = foundDog.WalkerId,
+        Walker = foundDog.Walker != null ? new WalkerDTO
+        {
+            Id = foundDog.Walker.Id,
+            Name = foundDog.Walker.Name
+        }: null
+
+    });
+
+
 
 });
 
@@ -207,6 +237,8 @@ app.MapGet("api/walkers", ()=> {
     });
 
 });
+
+
 
 
 app.MapGet("api/cities", ()=> {

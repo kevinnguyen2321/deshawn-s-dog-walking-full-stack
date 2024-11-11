@@ -1,11 +1,13 @@
 import { useEffect, useState } from 'react';
 import './NewDogForm.css';
 import { addNewDog, getAllCities, getAllWalkers } from '../apiManager';
+import { useNavigate } from 'react-router-dom';
 
 export const NewDogForm = () => {
   const [walkers, setWalkers] = useState([]);
   const [cities, setCities] = useState([]);
   const [newDogForm, setNewDogForm] = useState({});
+  const navigate = useNavigate();
 
   useEffect(() => {
     getAllWalkers()
@@ -32,21 +34,20 @@ export const NewDogForm = () => {
   const handleSubmitBtn = (event) => {
     event.preventDefault();
     //Check to see if all fields are not empty//
-    if (!newDogForm.name || !newDogForm.cityId || !newDogForm.walkerId) {
-      alert('Please fill out all fields before submitting');
+    if (!newDogForm.name || !newDogForm.cityId) {
+      alert('Please fill out name and city fields before submitting');
     } else {
       // Make sure user chooses from list of walkers//
       let walkerId = newDogForm.walkerId;
-      const foundWalker = walkers.find(
-        (walker) =>
-          walker.name.toLowerCase().trim() ===
-          newDogForm.walkerId.toLowerCase().trim()
-      );
-
-      if (!foundWalker) {
-        alert(`Please choose from list of walkers
-              ${walkers.map((w) => w.name)}
-              `);
+      let foundWalker;
+      if (walkerId) {
+        foundWalker = walkers.find(
+          (walker) =>
+            walker.name.toLowerCase().trim() ===
+            newDogForm.walkerId.toLowerCase().trim()
+        );
+      } else {
+        foundWalker = '';
       }
 
       //make sure user chooses from list of cities//
@@ -64,7 +65,16 @@ export const NewDogForm = () => {
       if (foundCity && foundWalker) {
         newDogForm.cityId = foundCity.id;
         newDogForm.walkerId = foundWalker.id;
-        addNewDog(newDogForm);
+        addNewDog(newDogForm).then((response) => {
+          const newDogId = response.id;
+          navigate(`/dog-details/${newDogId}`);
+        });
+      } else if (foundCity && !foundWalker) {
+        newDogForm.cityId = foundCity.id;
+        addNewDog(newDogForm).then((response) => {
+          const newDogId = response.id;
+          navigate(`/dog-details/${newDogId}`);
+        });
       }
     }
   };
