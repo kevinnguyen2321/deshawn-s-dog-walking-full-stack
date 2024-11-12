@@ -90,3 +90,20 @@ export const updateWalkerForDog = async (id, dogObj) => {
     console.error(error);
   }
 };
+
+export const removeWalker = async (id) => {
+  try {
+    const res = await fetch(`/api/walkers/${id}`, {
+      method: 'DELETE',
+    });
+
+    if (!res.ok) {
+      throw new Error(
+        `Failed to delete dog with id ${id}. Status: ${res.status}`
+      );
+    }
+    console.log(`Walker with id ${id} deleted successfully`);
+  } catch (error) {
+    console.error('Error:', error);
+  }
+};

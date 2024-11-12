@@ -1,7 +1,10 @@
 using DeshawnsDogWalking.Models;
 using DeshawnsDogWalking.Models.DTOs;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json; //TEST//
+using Microsoft.EntityFrameworkCore;
+using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Http.Json;
+
 
 
 
@@ -147,16 +150,11 @@ List<WalkerCity> walkerCities = new List<WalkerCity>
 
 
 var builder = WebApplication.CreateBuilder(args);
-//TEST//
-// Add services to the container.
-builder.Services.AddControllers()
-    .AddJsonOptions(options =>
-    {
-        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
-        // Optionally, set MaxDepth if needed to control object depth
-        options.JsonSerializerOptions.MaxDepth = 64; // Optional max depth
-    });
-//TEST ENDS//
+
+builder.Services.Configure<Microsoft.AspNetCore.Http.Json.JsonOptions>(options =>
+{
+    options.SerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+});
 
 
 
@@ -167,11 +165,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
-//TEST//
-app.UseAuthorization();
 
-app.MapControllers();
-//TEST///
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
