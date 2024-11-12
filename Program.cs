@@ -1,5 +1,6 @@
 using DeshawnsDogWalking.Models;
 using DeshawnsDogWalking.Models.DTOs;
+using Microsoft.AspNetCore.Mvc;
 
 
 List<Dog> dogs = new List<Dog> 
@@ -98,6 +99,48 @@ List<City> cities = new List<City>
         Name = "Phoenix" 
     }
 };
+
+List<WalkerCity> walkerCities = new List<WalkerCity>
+{
+    new WalkerCity
+    {
+        Id = 1,
+        WalkerId = 1, // Alex
+        CityId = 2    // Los Angeles
+    },
+    new WalkerCity
+    {
+        Id = 2,
+        WalkerId = 1, // Alex
+        CityId = 3    // Chicago
+    },
+    new WalkerCity
+    {
+        Id = 3,
+        WalkerId = 2, // Jordan
+        CityId = 1    // New York
+    },
+    new WalkerCity
+    {
+        Id = 4,
+        WalkerId = 3, // Taylor
+        CityId = 4    // Houston
+    },
+    new WalkerCity
+    {
+        Id = 5,
+        WalkerId = 4, // Morgan
+        CityId = 5    // Phoenix
+    },
+    new WalkerCity
+    {
+        Id = 6,
+        WalkerId = 3,
+        CityId = 5
+    }
+};
+
+
 
 
 
@@ -227,16 +270,41 @@ app.MapGet("api/dogs/{id}", (int id)=>{
 
 });
 
-app.MapGet("api/walkers", ()=> {
+
+
+
+
+
+app.MapGet("api/walkers", () => {
+    foreach (WalkerCity wc in walkerCities)
+    {
+        wc.City = cities.FirstOrDefault(city => city.Id == wc.CityId);
+    }
     return walkers.Select(walker => {
+        // Get all cities for the current walker
+        var citiesForWalker = walkerCities
+            .Where(wc => wc.WalkerId == walker.Id)  // Find all entries where this walker is referenced
+            .Select(wc => wc.City != null ? new CityDTO               // Project each associated city into a CityDTO
+            {
+                Id = wc.City.Id,
+                Name = wc.City.Name
+            }:null)
+            .ToList();
+
+        // Create the WalkerDTO including the list of cities
         return new WalkerDTO
         {
             Id = walker.Id,
-            Name = walker.Name
+            Name = walker.Name,
+            Cities = citiesForWalker  // Assign the list of CityDTOs to the Cities property
         };
-    });
-
+    }).ToList();  // Convert the final result to a list
 });
+
+
+
+
+
 
 
 
