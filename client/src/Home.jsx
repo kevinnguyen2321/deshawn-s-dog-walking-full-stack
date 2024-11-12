@@ -102,10 +102,8 @@ export default function Home() {
                     <button
                       onClick={() =>
                         handleAssignWalkerBtn(dog.id, {
-                          id: dog.id,
-                          name: dog.name,
-                          cityId: dog.cityId,
-                          walkerId: dog.walkerId,
+                          walkerId: walkerId,
+                          walker: walker,
                         })
                       }
                     >
