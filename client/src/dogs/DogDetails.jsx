@@ -5,13 +5,22 @@ import { getDogById } from '../apiManager';
 export const DogDetails = () => {
   const [dog, setDog] = useState({});
   const { dogId } = useParams();
-  console.log(dogId);
 
-  useEffect(() => {
+  const fetchDogDetails = () => {
     if (dogId) {
       getDogById(dogId).then(setDog);
     }
+  };
+
+  useEffect(() => {
+    fetchDogDetails();
   }, [dogId]);
+
+  useEffect(() => {
+    if (location.state?.refresh) {
+      fetchDogDetails();
+    }
+  }, [location.state]);
 
   return (
     <>

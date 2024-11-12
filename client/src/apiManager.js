@@ -13,6 +13,11 @@ export const getAllWalkers = async () => {
   return res.json();
 };
 
+export const getWalkerById = async (id) => {
+  const res = await fetch(`/api/walkers/${id}`);
+  return res.json();
+};
+
 export const getAllCities = async () => {
   const res = await fetch('/api/cities');
   return res.json();
@@ -64,5 +69,24 @@ export const removeDog = async (id) => {
     console.log(`Dog with id ${id} deleted successfully`);
   } catch (error) {
     console.error('Error:', error);
+  }
+};
+
+export const updateWalkerForDog = async (id, dogObj) => {
+  try {
+    const res = await fetch(`/api/dogs/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(dogObj),
+    });
+
+    if (!res.ok) {
+      throw new Error(`Failed to update dog: ${res.statusText}`);
+    }
+    return res.json();
+  } catch (error) {
+    console.error(error);
   }
 };

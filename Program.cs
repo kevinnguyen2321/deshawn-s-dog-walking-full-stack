@@ -1,6 +1,8 @@
 using DeshawnsDogWalking.Models;
 using DeshawnsDogWalking.Models.DTOs;
 using Microsoft.AspNetCore.Mvc;
+using System.Text.Json; //TEST//
+
 
 
 List<Dog> dogs = new List<Dog> 
@@ -145,6 +147,18 @@ List<WalkerCity> walkerCities = new List<WalkerCity>
 
 
 var builder = WebApplication.CreateBuilder(args);
+//TEST//
+// Add services to the container.
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+        // Optionally, set MaxDepth if needed to control object depth
+        options.JsonSerializerOptions.MaxDepth = 64; // Optional max depth
+    });
+//TEST ENDS//
+
+
 
 
 // Add services to the container.
@@ -153,6 +167,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+//TEST//
+app.UseAuthorization();
+
+app.MapControllers();
+//TEST///
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -279,28 +298,95 @@ app.MapGet("api/walkers", () => {
     foreach (WalkerCity wc in walkerCities)
     {
         wc.City = cities.FirstOrDefault(city => city.Id == wc.CityId);
+        wc.Walker = walkers.FirstOrDefault(walker => walker.Id == wc.WalkerId);
     }
+    
     return walkers.Select(walker => {
         // Get all cities for the current walker
-        var citiesForWalker = walkerCities
-            .Where(wc => wc.WalkerId == walker.Id)  // Find all entries where this walker is referenced
-            .Select(wc => wc.City != null ? new CityDTO               // Project each associated city into a CityDTO
-            {
-                Id = wc.City.Id,
-                Name = wc.City.Name
-            }:null)
-            .ToList();
+        foreach (Walker w in walkers)
+        {
+            w.Cities = walkerCities.Where(wc => wc.WalkerId == w.Id).ToList();
+        }
+         
 
         // Create the WalkerDTO including the list of cities
         return new WalkerDTO
         {
             Id = walker.Id,
             Name = walker.Name,
-            Cities = citiesForWalker  // Assign the list of CityDTOs to the Cities property
+            Cities = walker.Cities.Select(wc => new WalkerCityDTO
+            {
+                Id = wc.Id,
+                WalkerId = wc.WalkerId,
+                Walker = new WalkerDTO
+                {
+                    Id = wc.Walker.Id,
+                    Name= wc.Walker.Name
+                },
+                CityId = wc.CityId,
+                City = new CityDTO
+                {
+                    Id = wc.City.Id,
+                    Name = wc.City.Name
+                }
+
+            }).ToList()
+         
         };
     }).ToList();  // Convert the final result to a list
 });
 
+
+
+
+app.MapGet("api/walkers/{id}", (int id) => {
+    Walker foundWalker = walkers.FirstOrDefault(w => w.Id == id);
+
+    if (foundWalker == null)
+    {
+        return Results.NotFound();
+    }
+
+    // Get all WalkerCity relationships for this walker and populate the City and Walker references
+    var walkerCityList = walkerCities
+        .Where(wc => wc.WalkerId == foundWalker.Id)
+        .Select(wc => new WalkerCityDTO {
+            Id = wc.Id,
+            WalkerId = wc.WalkerId,
+            Walker = foundWalker == null ? null : new WalkerDTO {
+                Id = foundWalker.Id,
+                Name = foundWalker.Name
+            },
+            CityId = wc.CityId,
+            City = wc.City == null ? null : new CityDTO {
+                Id = wc.City.Id,
+                Name = wc.City.Name
+            }
+        })
+        .ToList();
+
+    // Create the WalkerDTO with the populated list of WalkerCityDTOs
+    var walkerDTO = new WalkerDTO {
+        Id = foundWalker.Id,
+        Name = foundWalker.Name,
+        Cities = walkerCityList
+    };
+
+    return Results.Ok(walkerDTO);
+});
+
+
+app.MapDelete("api/walkers/{id}", (int id) => {
+       Walker foundWalker = walkers.FirstOrDefault(w => w.Id == id);
+
+       if (foundWalker == null)
+       {
+        return Results.NotFound();
+       }
+
+       walkers.Remove(foundWalker);
+       return Results.NoContent();
+});
 
 
 
@@ -334,6 +420,46 @@ app.MapDelete("api/dogs/{id}", (int id)=>{
     return Results.NoContent();
 
 });
+
+// app.MapPut("api/dogs/{id}", (int id, Dog dog) => {
+//     Dog dogToUpdate = dogs.FirstOrDefault(d => d.Id == id);
+
+//       if (dogToUpdate == null)
+//     {
+//         return Results.NotFound();
+//     }
+
+ 
+  
+//     dogToUpdate.WalkerId = dog.WalkerId;
+
+//     return Results.Ok(dogToUpdate);
+
+// });
+
+
+app.MapPut("api/dogs/{id}", (int id, Dog dog) => {
+    try
+    {
+        Dog dogToUpdate = dogs.FirstOrDefault(d => d.Id == id);
+        if (dogToUpdate == null)
+        {
+            return Results.NotFound();
+        }
+
+        dogToUpdate.WalkerId = dog.WalkerId;
+        return Results.Ok(dogToUpdate);
+    }
+    catch (Exception ex)
+    {
+        // Log the error
+        Console.WriteLine($"Error: {ex.Message}");
+        return Results.Problem("An error occurred while processing the request.");
+    }
+});
+
+
+
 
 
 

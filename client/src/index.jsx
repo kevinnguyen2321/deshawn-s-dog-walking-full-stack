@@ -17,7 +17,8 @@ root.render(
         <Route index element={<Home />} />
         <Route path="new-dog-form" element={<NewDogForm />} />
         <Route path="dog-details/:dogId" element={<DogDetails />} />
-        <Route path="/walkers" element={<Walkers />} />
+        <Route path="walkers" element={<Walkers />} />
+        <Route path="available-dogs/:walkerId" element={<Home />} />
       </Route>
     </Routes>
   </BrowserRouter>

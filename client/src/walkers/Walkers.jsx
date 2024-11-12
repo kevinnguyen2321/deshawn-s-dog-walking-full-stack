@@ -1,12 +1,15 @@
 import { useEffect, useState } from 'react';
 import { getAllCities, getAllWalkers } from '../apiManager';
 import './Walkers.css';
+import { useNavigate } from 'react-router-dom';
 
 export const Walkers = () => {
   const [walkersList, setWalkersList] = useState([]);
   const [filteredWalkerList, setFilteredWalkerList] = useState([]);
   const [cities, setCities] = useState([]);
   const [selectedCityId, setSelectedCityId] = useState(null);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     getAllWalkers().then((walkers) => {
@@ -37,6 +40,10 @@ export const Walkers = () => {
     setSelectedCityId(cityId || null); // Reset to null if no city is selected
   };
 
+  const handleAssignDogBtnClick = (id) => {
+    navigate(`/available-dogs/${id}`);
+  };
+
   return (
     <>
       <div className="walker-wrapper">
@@ -44,7 +51,16 @@ export const Walkers = () => {
           <h2>List of Walkers</h2>
           <ul className="walkers-list-wrapper">
             {filteredWalkerList.map((walker) => (
-              <li key={walker.id}>{walker.name}</li>
+              <li key={walker.id}>
+                {walker.name}
+                <button
+                  onClick={() => handleAssignDogBtnClick(walker.id)}
+                  className="assign-dog-btn"
+                >
+                  Assign dog
+                </button>
+                <button className="remove-walker-btn">Remove Walker</button>
+              </li>
             ))}
           </ul>
         </div>
