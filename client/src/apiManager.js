@@ -108,19 +108,29 @@ export const updateWalkerForDog = async (id, dogObj) => {
   }
 };
 
-export const removeWalker = async (id) => {
+export const getAllWalkerCities = async () => {
+  try {
+    const res = await fetch('/api/walkerCities');
+    return res.json();
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+export const updateWalker = async (id, walkerObj) => {
   try {
     const res = await fetch(`/api/walkers/${id}`, {
-      method: 'DELETE',
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(walkerObj),
     });
 
     if (!res.ok) {
-      throw new Error(
-        `Failed to delete dog with id ${id}. Status: ${res.status}`
-      );
+      throw new Error(`Failed to update dog: ${res.statusText}`);
     }
-    console.log(`Walker with id ${id} deleted successfully`);
   } catch (error) {
-    console.error('Error:', error);
+    console.error(error);
   }
 };

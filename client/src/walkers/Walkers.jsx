@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getAllCities, getAllWalkers, removeWalker } from '../apiManager';
 import './Walkers.css';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 export const Walkers = () => {
   const [walkersList, setWalkersList] = useState([]);
@@ -70,7 +70,7 @@ export const Walkers = () => {
           <ul className="walkers-list-wrapper">
             {filteredWalkerList.map((walker) => (
               <li key={walker.id}>
-                {walker.name}
+                <Link to={`/walker-details/${walker.id}`}>{walker.name}</Link>
                 <button
                   onClick={() => handleAssignDogBtnClick(walker.id)}
                   className="assign-dog-btn"
