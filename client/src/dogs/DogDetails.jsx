@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { getDogById } from '../apiManager';
+import { getDogById, getWalkerById } from '../apiManager';
 
 export const DogDetails = () => {
   const [dog, setDog] = useState({});
+  const [walker, setWalker] = useState({});
   const { dogId } = useParams();
 
   const fetchDogDetails = () => {
@@ -17,16 +18,20 @@ export const DogDetails = () => {
   }, [dogId]);
 
   useEffect(() => {
-    if (location.state?.refresh) {
-      fetchDogDetails();
-    }
-  }, [location.state]);
+    getWalkerById(dog.walkerId).then(setWalker);
+  }, [dog]);
+
+  // useEffect(() => {
+  //   if (location.state?.refresh) {
+  //     fetchDogDetails();
+  //   }
+  // }, [location.state]);
 
   return (
     <>
       <p>
         {dog.name} is currently being walked by{' '}
-        {dog.walker ? dog.walker.name : 'no one'}.
+        {walker ? walker.name : 'no one'}.
       </p>
     </>
   );
