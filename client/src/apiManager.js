@@ -40,6 +40,29 @@ export const getAllCities = async () => {
   return res.json();
 };
 
+export const addNewCity = async (city) => {
+  try {
+    const res = await fetch('/api/cities', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(city),
+    });
+
+    // Check if the response is OK (status code 200-299)
+    if (!res.ok) {
+      throw new Error(`Error: ${res.status}`);
+    }
+
+    const data = await res.json(); // Parse the JSON response
+    console.log('Success:', data); // Handle the successful response
+    return data;
+  } catch (error) {
+    console.error('Error:', error); // Handle any error that occurs
+  }
+};
+
 export const addNewDog = async (dog) => {
   try {
     const res = await fetch('/api/dogs', {
