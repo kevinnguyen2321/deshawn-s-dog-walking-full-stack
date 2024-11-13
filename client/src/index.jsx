@@ -8,6 +8,7 @@ import Home from './Home';
 import { NewDogForm } from './dogs/NewDogForm';
 import { DogDetails } from './dogs/DogDetails';
 import { Walkers } from './walkers/Walkers';
+import { WalkerDetails } from './walkers/WalkerDetails';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -19,6 +20,7 @@ root.render(
         <Route path="dog-details/:dogId" element={<DogDetails />} />
         <Route path="walkers" element={<Walkers />} />
         <Route path="available-dogs/:walkerId" element={<Home />} />
+        <Route path="walker-details/:walkerId" element={<WalkerDetails />} />
       </Route>
     </Routes>
   </BrowserRouter>
