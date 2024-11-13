@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getAllCities, getAllWalkers } from '../apiManager';
+import { getAllCities, getAllWalkers, removeWalker } from '../apiManager';
 import './Walkers.css';
 import { useNavigate } from 'react-router-dom';
 
@@ -44,6 +44,24 @@ export const Walkers = () => {
     navigate(`/available-dogs/${id}`);
   };
 
+  const handleRemoveWalkerClick = async (id) => {
+    await removeWalker(id);
+
+    // Update the full list of walkers by filtering out the removed walker
+    const updatedWalkersList = walkersList.filter((walker) => walker.id !== id);
+    setWalkersList(updatedWalkersList);
+
+    // Update the filtered list based on the selected city
+    if (selectedCityId === null) {
+      setFilteredWalkerList(updatedWalkersList); // No filter applied
+    } else {
+      const updatedFilteredList = updatedWalkersList.filter((walker) =>
+        walker.cities.some((city) => city.id === selectedCityId)
+      );
+      setFilteredWalkerList(updatedFilteredList);
+    }
+  };
+
   return (
     <>
       <div className="walker-wrapper">
@@ -59,7 +77,12 @@ export const Walkers = () => {
                 >
                   Assign dog
                 </button>
-                <button className="remove-walker-btn">Remove Walker</button>
+                <button
+                  onClick={() => handleRemoveWalkerClick(walker.id)}
+                  className="remove-walker-btn"
+                >
+                  Remove Walker
+                </button>
               </li>
             ))}
           </ul>

@@ -378,6 +378,14 @@ app.MapDelete("api/walkers/{id}", (int id) => {
         return Results.NotFound();
        }
 
+       foreach (Dog dog in dogs)
+       {
+        if (dog.WalkerId == id)
+        {
+            dog.WalkerId = null;
+        }
+       }
+
        walkers.Remove(foundWalker);
        return Results.NoContent();
 });
