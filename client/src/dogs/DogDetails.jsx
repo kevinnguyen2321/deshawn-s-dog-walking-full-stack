@@ -21,12 +21,6 @@ export const DogDetails = () => {
     getWalkerById(dog.walkerId).then(setWalker);
   }, [dog]);
 
-  // useEffect(() => {
-  //   if (location.state?.refresh) {
-  //     fetchDogDetails();
-  //   }
-  // }, [location.state]);
-
   return (
     <>
       <p>
